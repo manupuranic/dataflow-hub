@@ -1,0 +1,23 @@
+# DataFlow Hub Configuration
+
+importer:
+  chunk_size: 500
+  max_retries: 3
+  timeout_seconds: 300
+  enable_validation: true
+  enable_caching: true
+  log_level: "INFO"
+
+file_paths:
+  input_dir: "data/input"
+  output_dir: "data/output"
+  log_dir: "logs"
+  archive_dir: "data/archive"
+
+field_mappings:
+  products:
+    "Item Name": "item_name"
+    "Brand": "brand_name"
+  invoices:
+    "Invoice No": "invoice_number"
+    "Date": "invoice_date"
