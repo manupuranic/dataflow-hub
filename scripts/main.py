@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DataFlow Hub - Main Orchestrator Script
+DataSync Engine - Main Orchestrator Script
 Enterprise Data Integration Platform
 """
 

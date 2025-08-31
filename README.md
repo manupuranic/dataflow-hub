@@ -1,4 +1,4 @@
-# DataFlow Hub - Enterprise Data Integration Platform
+# DataSync Engine - Enterprise Data Integration Platform
 
 🚀 A scalable, modular ETL pipeline for processing large-scale business data with advanced deduplication, error handling, and monitoring capabilities.
 
@@ -15,7 +15,7 @@
 ## 🏗️ Architecture
 
 ```
-DataFlow Hub
+DataSync Engine
 ├── Core Framework (base classes, utilities)
 ├── Specialized Importers (products, invoices, purchases)
 ├── Data Models (validation, schemas)
