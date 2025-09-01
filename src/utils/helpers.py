@@ -6,7 +6,7 @@ import os
 import pandas as pd
 import html
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 def read_csv(file_path):
     full_path = os.path.join(BASE_DIR, file_path)

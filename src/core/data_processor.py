@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from enum import Enum
 import math
 import copy
-from src.utils.logger import get_logger
-from src.utils.field_normalizer import FieldNormalizer
+from utils.logger import get_logger
+from utils.field_normalizer import FieldNormalizer
 
 logger = get_logger(__name__)
 
@@ -65,22 +65,22 @@ class ProcessingStats:
     def log_summary(self):
         """Log comprehensive processing summary."""
         logger.info("=" * 60)
-        logger.info("🎯 PROCESSING SUMMARY")
+        logger.info("PROCESSING SUMMARY")
         logger.info("=" * 60)
-        logger.info(f"⏱️  Duration: {self.duration:.2f}s" if self.duration else "⏱️  Duration: N/A")
-        logger.info(f"📊 Input records: {self.total_input_records:,}")
-        logger.info(f"📊 Output records: {self.total_output_records:,}")
-        logger.info(f"✅ Successful: {self.successful_records:,}")
-        logger.info(f"⚠️  Skipped: {self.skipped_records:,}")
-        logger.info(f"❌ Errors: {self.error_records:,}")
-        logger.info(f"🔄 Duplicate groups: {self.duplicate_groups:,}")
-        logger.info(f"🎯 Success rate: {self.success_rate:.2f}%")
-        
+        logger.info(f"Duration: {self.duration:.2f}s" if self.duration else "Duration: N/A")
+        logger.info(f"Input records: {self.total_input_records:,}")
+        logger.info(f"Output records: {self.total_output_records:,}")
+        logger.info(f"Successful: {self.successful_records:,}")
+        logger.info(f"Skipped: {self.skipped_records:,}")
+        logger.info(f"Errors: {self.error_records:,}")
+        logger.info(f"Duplicate groups: {self.duplicate_groups:,}")
+        logger.info(f"Success rate: {self.success_rate:.2f}%")
+
         if self.validation_errors > 0:
-            logger.warning(f"⚠️  Validation errors: {self.validation_errors:,}")
+            logger.warning(f"Validation errors: {self.validation_errors:,}")
         if self.database_errors > 0:
-            logger.error(f"💾 Database errors: {self.database_errors:,}")
-        
+            logger.error(f"Database errors: {self.database_errors:,}")
+
         logger.info("=" * 60)
 
 class DataProcessor:
@@ -96,7 +96,7 @@ class DataProcessor:
         column_mappings: Dict[str, str] = None
     ) -> pd.DataFrame:
         """Normalize dataframe with optional column mapping."""
-        self.logger.info(f"🔧 Normalizing dataframe with {len(df):,} records")
+        self.logger.info(f"Normalizing dataframe with {len(df):,} records")
         
         # Apply column mappings if provided
         if column_mappings:
@@ -115,7 +115,7 @@ class DataProcessor:
         for column, normalizer_func in normalization_rules.items():
             if column in df.columns:
                 df[column] = df[column].apply(normalizer_func)
-                self.logger.debug(f"✅ Normalized column: {column}")
+                self.logger.debug(f"Normalized column: {column}")
         
         return df
     
@@ -128,7 +128,7 @@ class DataProcessor:
     ) -> Tuple[List[Dict[str, Any]], Dict[tuple, List[Tuple[int, Dict[str, Any]]]]]:
         """Advanced deduplication with multiple strategies."""
         
-        self.logger.info(f"🔄 Starting deduplication: {len(records):,} records, strategy: {strategy.value}")
+        self.logger.info(f"Starting deduplication: {len(records):,} records, strategy: {strategy.value}")
         
         # Group records by conflict columns
         groups = defaultdict(list)
@@ -140,7 +140,7 @@ class DataProcessor:
         
         if duplicates_info:
             total_duplicates = sum(len(v) for v in duplicates_info.values())
-            self.logger.warning(f"🚨 Found {len(duplicates_info):,} duplicate groups "
+            self.logger.warning(f"Found {len(duplicates_info):,} duplicate groups "
                               f"affecting {total_duplicates:,} records")
         
         # Process each group
@@ -154,7 +154,7 @@ class DataProcessor:
                 )
                 deduped_records.append(merged_record)
         
-        self.logger.info(f"✅ Deduplication completed: {len(deduped_records):,} unique records")
+        self.logger.info(f"Deduplication completed: {len(deduped_records):,} unique records")
         return deduped_records, duplicates_info
     
     def _create_conflict_key(self, record: Dict[str, Any], columns: List[str]) -> tuple:

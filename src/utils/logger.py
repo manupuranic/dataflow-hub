@@ -39,25 +39,34 @@ def setup_logging(
         logging.config.dictConfig(config)
     else:
         # Default configuration
-        logging.basicConfig(
-            level=getattr(logging, log_level.upper()),
-            format='%(asctime)s | %(name)20s | %(levelname)8s | %(funcName)s:%(lineno)d | %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S',
-            handlers=[
-                logging.StreamHandler(sys.stdout),
-                logging.FileHandler(f'{log_dir}/import.log'),
-                logging.FileHandler(f'{log_dir}/error.log', level=logging.ERROR)
-            ]
+        root_logger = logging.getLogger()
+        root_logger.setLevel(getattr(logging, log_level.upper()))
+        
+        formatter = logging.Formatter(
+            '%(asctime)s | %(name)20s | %(levelname)8s | %(funcName)s:%(lineno)d | %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
         )
-    
-    # Add colored formatter to console handler
-    root_logger = logging.getLogger()
-    for handler in root_logger.handlers:
-        if isinstance(handler, logging.StreamHandler) and handler.stream == sys.stdout:
-            handler.setFormatter(ColoredFormatter(
-                '%(asctime)s | %(name)20s | %(levelname)8s | %(funcName)s:%(lineno)d | %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S'
-            ))
+        
+        # Console handler
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(getattr(logging, log_level.upper()))
+        console_handler.setFormatter(ColoredFormatter(
+            '%(asctime)s | %(name)20s | %(levelname)8s | %(funcName)s:%(lineno)d | %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        ))
+        
+        # Import log file handler
+        import_handler = logging.FileHandler(f'{log_dir}/import.log')
+        import_handler.setLevel(getattr(logging, log_level.upper()))
+        import_handler.setFormatter(formatter)
+        
+        # Error log file handler (only errors+)
+        error_handler = logging.FileHandler(f'{log_dir}/error.log')
+        error_handler.setLevel(logging.ERROR)
+        error_handler.setFormatter(formatter)
+        
+        # Attach handlers
+        root_logger.handlers = [console_handler, import_handler, error_handler]
 
 def get_logger(name: str) -> logging.Logger:
     """Get a configured logger instance."""

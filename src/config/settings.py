@@ -3,7 +3,7 @@ from typing import Dict, Any, List
 import yaml
 from pathlib import Path
 
-from src.config.database import DATABASE_CONFIG  # Import database config
+from config.database import DATABASE_CONFIG  # Import database config
 
 @dataclass
 class ImporterConfig:

@@ -4,9 +4,9 @@ from typing import Dict, List, Any, Optional, Union
 import pandas as pd
 from pathlib import Path
 from tqdm.auto import tqdm
-from src.utils.logger import get_logger
-from src.core.data_processor import DataProcessor, ProcessingStats, MergeStrategy, FieldMergeMode
-from src.core.exceptions import *
+from utils.logger import get_logger
+from core.data_processor import DataProcessor, ProcessingStats, MergeStrategy, FieldMergeMode
+from core.exceptions import *
 
 class BaseImporter(ABC):
     """
@@ -39,7 +39,7 @@ class BaseImporter(ABC):
         self.max_retries = self.config.get('max_retries', 3)
         self.enable_validation = self.config.get('enable_validation', True)
         
-        self.logger.info(f"🚀 {self.__class__.__name__} initialized")
+        self.logger.info(f"{self.__class__.__name__} initialized")
     
     @abstractmethod
     def get_table_name(self) -> str:
@@ -105,7 +105,7 @@ class BaseImporter(ABC):
     
     def load_and_validate_file(self, file_path: str) -> pd.DataFrame:
         """Load file and perform basic validation."""
-        self.logger.info(f"📂 Loading data from: {file_path}")
+        self.logger.info(f"Loading data from: {file_path}")
         
         if not Path(file_path).exists():
             raise FileProcessingError(f"File not found: {file_path}")
@@ -116,7 +116,7 @@ class BaseImporter(ABC):
             df = read_data(file_path)
             
             self.stats.total_input_records = len(df)
-            self.logger.info(f"✅ Loaded {len(df):,} records from {Path(file_path).name}")
+            self.logger.info(f"Loaded {len(df):,} records from {Path(file_path).name}")
             
             # Validate if enabled
             if self.enable_validation and not self.validate_input_data(df):
@@ -125,7 +125,7 @@ class BaseImporter(ABC):
             return df
             
         except Exception as e:
-            self.logger.error(f"❌ Error loading file {file_path}: {e}")
+            self.logger.error(f"Error loading file {file_path}: {e}")
             raise FileProcessingError(f"Failed to load {file_path}: {e}")
     
     def process_batch(self, batch_df: pd.DataFrame) -> List[Dict[str, Any]]:
@@ -142,7 +142,7 @@ class BaseImporter(ABC):
                     self.stats.skipped_records += 1
                     
             except Exception as e:
-                self.logger.warning(f"⚠️  Error processing row {idx}: {e}")
+                self.logger.warning(f"Error processing row {idx}: {e}")
                 self.stats.error_records += 1
         
         return batch_records
@@ -174,11 +174,11 @@ class BaseImporter(ABC):
             )
             
             inserted_count = len(deduped_data)
-            self.logger.info(f"✅ Inserted/updated {inserted_count:,} records")
+            self.logger.info(f"Inserted/updated {inserted_count:,} records")
             return inserted_count
             
         except Exception as e:
-            self.logger.error(f"❌ Database insertion error: {e}")
+            self.logger.error(f"Database insertion error: {e}")
             self.stats.database_errors += 1
             return 0
     
@@ -200,8 +200,8 @@ class BaseImporter(ABC):
             ProcessingStats with detailed metrics
         """
         chunk_size = chunk_size or self.chunk_size
-        self.logger.info(f"🚀 Starting {self.get_table_name()} import")
-        self.logger.info(f"⚙️  Config: chunk_size={chunk_size}, offset={offset}")
+        self.logger.info(f"Starting {self.get_table_name()} import")
+        self.logger.info(f"Config: chunk_size={chunk_size}, offset={offset}")
         
         try:
             # Load and validate data
@@ -212,19 +212,19 @@ class BaseImporter(ABC):
             
             # Apply offset
             if offset > 0:
-                self.logger.info(f"⏭️  Applying offset: {offset:,} records")
+                self.logger.info(f"Applying offset: {offset:,} records")
                 df = df.iloc[offset:]
             
             total_records = len(df)
             total_batches = math.ceil(total_records / chunk_size)
-            self.logger.info(f"📊 Processing {total_records:,} records in {total_batches} batches")
+            self.logger.info(f"Processing {total_records:,} records in {total_batches} batches")
             
             # Process in batches
             for i in range(0, total_records, chunk_size):
                 batch_num = i // chunk_size + 1
                 batch_df = df.iloc[i:i + chunk_size]
                 
-                self.logger.info(f"📦 Processing Batch {batch_num}/{total_batches} "
+                self.logger.info(f"Processing Batch {batch_num}/{total_batches} "
                                f"({len(batch_df)} records)")
                 
                 # Process batch
@@ -237,13 +237,13 @@ class BaseImporter(ABC):
                 
                 # Progress update
                 progress = (batch_num / total_batches) * 100
-                self.logger.info(f"📈 Progress: {progress:.1f}% complete")
+                self.logger.info(f"Progress: {progress:.1f}% complete")
             
             self.stats.finish()
             self.stats.log_summary()
             return self.stats
             
         except Exception as e:
-            self.logger.error(f"💥 Import failed: {e}")
+            self.logger.error(f"Import failed: {e}")
             self.stats.finish()
             raise
